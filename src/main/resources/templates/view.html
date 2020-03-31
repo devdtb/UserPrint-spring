@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>User Data Import</title>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<link rel="stylesheet"
+	th:href="@{webjars/bootstrap/4.2.1/css/bootstrap.min.css}" />
+<link rel="stylesheet" th:href="@{/css/main.css}" />
+</head>
+
+<body>
+
+
+	<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+		<a class="navbar-brand" href="/">User Data</a>
+		<form class="form-inline" method="get" action="/stop">
+			<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Stop application</button>
+		</form>
+	</nav>
+
+
+
+
+
+	<div class="container-fluid" style="padding: 20px;">
+		<div class="row">
+			<div class="col-12">
+				<form method="post" action="/upload" enctype="multipart/form-data">
+					<input type="file" name="file">
+					<button type="submit">Upload</button>
+				</form>
+			</div>
+		</div>
+		
+		<br><br>
+		
+		<div class="row">
+			<div class="col col-lg-2">
+				<p>Issue Date: <span th:text="${issueDateStr}">????</span></p>
+			</div>
+			<div class="col col-lg-10">
+				<form method="post" action="/changeIssueDate">
+					<input type="text" name="issueDate" placeholder="dd.mm.yyyy">
+					<button type="submit">Change Issue Date</button>
+				</form>
+			</div>
+		</div>
+		
+		<br><br>
+		
+		<div class="row">
+			<div class="col-2">
+				<form method="post" action="/reset">
+					<button type="submit">Reset Table</button>
+				</form>
+			</div>
+			<div class="col-10">
+				<p>Last Name - First Name separator: <span th:text="${nameSeparator}"></span></p>
+			</div>
+		</div>
+
+
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th>Nr. Crt.</th>
+					<th></th>
+					<th>Nume</th>
+					<th>Prenume</th>
+					<th>C.N.P</th>
+					<th>Domiciliu</th>
+					<th>Act de identitate</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:if="${userDataList.empty}">
+					<td colspan="6">No User Data Available</td>
+				</tr>
+				<tr th:each="userData : ${userDataList}">
+					<td><span th:text="${userData.ctr}">-</span></td>
+					<td><a th:href="@{/download(id=${userData.id})}" css="btn btn-primary" role="button">Download</td>
+					<td><span th:text="${userData.lname}">-</span></td>
+					<td><span th:text="${userData.fname}">-</span></td>
+					<td><span th:text="${userData.cnp}">-</span></td>
+					<td><span th:text="${userData.address}">-</span></td>
+					<td><span th:text="${userData.idnr}">-</span></td>
+				</tr>
+			</tbody>
+		</table>
+	
+	</div>
+
+
+
+	<script type="text/javascript"
+		th:src="@{webjars/bootstrap/4.2.1/js/bootstrap.min.js}"></script>
+		
+		
+
+</body>
+
+</html>
+
