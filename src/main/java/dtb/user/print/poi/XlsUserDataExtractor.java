@@ -77,12 +77,23 @@ public class XlsUserDataExtractor {
 		userData.setCtr(getIntCellValue(row.getCell(0)));
 		
 		String name = getCellValue(row.getCell(1));
-		String[] names = name.split(NAME_SEPARATOR);
-		userData.setLname(names[0]);
+		
+		String[] names = new String[]{"", ""};
+		
+		if(name.contains("@")){
+			names = name.split(NAME_SEPARATOR);
+		} else {
+			names = name.split(" ", 2);
+		}
+
+		if(names.length > 0){
+			userData.setLname(names[0]);
+		}
+		
 		if(names.length > 1){
 			userData.setFname(names[1]);
 		}
-
+		
 		userData.setCnp(getCNPCellValue(row.getCell(2)));
 		userData.setAddress(getCellValue(row.getCell(3)));
 		userData.setIdnr(getCellValue(row.getCell(4)));
