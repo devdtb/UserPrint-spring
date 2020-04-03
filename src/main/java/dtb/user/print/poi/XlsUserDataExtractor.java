@@ -10,7 +10,7 @@ public class XlsUserDataExtractor extends XlsUserExtractor<UserData>{
 	@Override
 	protected UserData extractData(HSSFRow row) throws Exception {
 		UserData userData = new UserData();
-		userData.setCtr(getIntCellValue(row.getCell(0)).trim());
+		userData.setCtr(cleanCtr(getIntCellValue(row.getCell(0))));
 		
 		String[] names = getFirstLastName(getCellValue(row.getCell(1)));
 		

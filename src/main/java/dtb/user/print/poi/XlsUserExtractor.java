@@ -151,7 +151,11 @@ public abstract class XlsUserExtractor<T> {
 		return cleanString(value);
 	}
 	
-	private String cleanString(String value){
-		return value.replaceAll("\\s"," ").replaceAll("  ", " ").trim();
+	protected String cleanString(String value){
+		return value.replaceAll("\\s", " ").replaceAll("  ", " ").trim();
+	}
+	
+	protected String cleanCtr(String value){
+		return value.replaceAll("[^0-9]", "").trim();
 	}
 }

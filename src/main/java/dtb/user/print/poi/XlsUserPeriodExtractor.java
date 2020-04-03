@@ -56,7 +56,7 @@ public class XlsUserPeriodExtractor extends XlsUserExtractor<UserPeriod>{
 	@Override
 	protected UserPeriod extractData(HSSFRow row) throws Exception {
 		UserPeriod userPeriod = new UserPeriod();
-		userPeriod.setCtr(getIntCellValue(row.getCell(0)).trim());
+		userPeriod.setCtr(cleanCtr(getIntCellValue(row.getCell(0))));
 		
 		String[] names = getFirstLastName(getCellValue(row.getCell(1)));
 		

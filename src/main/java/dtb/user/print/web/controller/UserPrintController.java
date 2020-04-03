@@ -492,6 +492,9 @@ public class UserPrintController {
 
 	
 	private String getFileName(UserData userData, UserPeriod userPeriod){
+		String ctr = userPeriod != null && StringUtils.hasLength(userPeriod.getCtr())
+				? userPeriod.getCtr() : "" ;
+				
 		String lname = userData != null && StringUtils.hasLength(userData.getLname())
 				? userData.getLname()
 				: userPeriod != null && StringUtils.hasLength(userPeriod.getLname())
@@ -510,7 +513,7 @@ public class UserPrintController {
 						? userPeriod.getCnp() : "";		
 		cnp = cnp.trim();
 						
-		String fileName = lname;
+		String fileName = StringUtils.hasLength(ctr) ? ctr + "_" + lname : lname;
 		fileName += StringUtils.hasLength(fname) ? "_" + fname : "";
 		fileName += StringUtils.hasLength(cnp) ? "_" + cnp : "";
 		fileName += ".docx";

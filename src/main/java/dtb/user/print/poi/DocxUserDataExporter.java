@@ -110,7 +110,7 @@ public class DocxUserDataExporter {
 		String century = "";
 		if(cnp.startsWith("1") || cnp.startsWith("2")){
 			century = "19";
-		} else {
+		} else if(cnp.startsWith("5") || cnp.startsWith("6")){
 			century = "20";
 		}
 					
