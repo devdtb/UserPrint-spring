@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>User Data Mapping</title>
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.2.1/css/bootstrap.min.css}" />
+	<link rel="stylesheet" th:href="@{/webjars/font-awesome/5.13.0/css/all.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/main.css}" />
+</head>
+
+<body>
+
+	<nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
+		<div class="collapse navbar-collapse" id="navbarNavDropdown">
+			<ul class="navbar-nav">
+				<li class="nav-item"><a class="nav-link" th:href="@{/} + ${userKey}"><i class="fas fa-users"></i> User Data</a></li>
+				<li class="nav-item active"><a class="nav-link" href="/userPeriod"><i class="fas fa-history"></i> User Period</a></li>
+			</ul>
+		</div>
+		<form class="form-inline" method="get" th:action="@{/stop}">
+			<button class="btn btn-outline-success my-2 my-sm-0" type="submit"><i class="fas fa-power-off"></i> Stop	application</button>
+		</form>
+	</nav>
+	
+	<br>
+	
+	<div class="container-fluid" style="padding: 20px;">
+		<div class="row">
+			<div class="col-12">
+				<h3><i class="fas fa-arrows-alt-h"></i> User mapping</h3>
+			</div>
+			<br><br><br>
+			<div class="col-12">
+				<h5>
+					<span th:text="${userPeriod.lname}">-</span>
+					<span th:text="${userPeriod.fname}">-</span>
+					<span th:text="${userPeriod.cnp}">-</span>
+				</h5>
+			</div>
+		</div>
+		
+		<br>
+		
+		<div class="row">
+			<div class="col-12">
+				<form method="post" th:action="@{/mapUser/} + ${userKey}">
+					<input type="hidden" name="userPeriodId" th:value="${userPeriod.userPeriodId}"/>
+					
+					<div th:if="${userDataMappingList.empty}">
+						<span>No user data available to match....</span>
+					</div>
+					<div>
+						<input type="radio" id="userId_0" name="userDataId" value="0" checked>
+						<label for="userId_0">
+							<span>None</span>
+						</label><br>
+					</div>
+					<div th:each="userData : ${userDataMappingList}">
+						<input type="radio" th:id="'userId_' + ${userData.userDataId}" name="userDataId" th:value="${userData.userDataId}">
+						<label th:for="'userId_' + ${userData.userDataId}">
+							<span th:text="${userData.lname}">-</span>
+							<span th:text="${userData.fname}">-</span>
+							<span th:text="${userData.cnp}">-</span>
+							<span th:text="${userData.address}">-</span>
+						</label><br>
+					</div>
+					<br>
+					<button type="submit"><i class="fas fa-save"></i> Save Mapping</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/webjars/bootstrap/4.2.1/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/main.js}"></script>
+</body>
+
+</html>
+

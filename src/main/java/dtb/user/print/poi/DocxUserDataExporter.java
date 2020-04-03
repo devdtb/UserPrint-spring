@@ -17,8 +17,10 @@ import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import dtb.user.print.entity.UserData;
+import dtb.user.print.entity.UserPeriod;
 
 @Component
 public class DocxUserDataExporter {
@@ -27,10 +29,10 @@ public class DocxUserDataExporter {
 	private DateFormat mm = new SimpleDateFormat("MM");
 	private DateFormat dd = new SimpleDateFormat("dd");
 
-	public byte[] getDocx(UserData userData, Date issueDate) throws Exception {
+	public byte[] getDocx(UserData userData, UserPeriod userPeriod, Date issueDate) throws Exception {
 		byte[] docxBytes = new byte[0];
 
-		Map<String, Object> replacementMap = getReplacementMap(userData, issueDate);
+		Map<String, Object> replacementMap = getReplacementMap(userData, userPeriod, issueDate);
 
 		ClassLoader classLoader = DocxUserDataExporter.class.getClassLoader();
 		InputStream is = classLoader.getResourceAsStream("aviz_epidemiologic_matrix.docx");
@@ -65,52 +67,74 @@ public class DocxUserDataExporter {
 		return docxBytes;
 	}
 
-	private Map<String, Object> getReplacementMap(UserData userData, Date issueDate) {
+	private Map<String, Object> getReplacementMap(UserData userData, UserPeriod userPeriod, Date issueDate) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(issueDate);
 
 		Calendar from = (Calendar) cal.clone();
-		from.add(Calendar.DAY_OF_MONTH, -14);
 		Calendar to = (Calendar) cal.clone();
-		to.add(Calendar.DAY_OF_MONTH, -1);
+
+		if(userPeriod != null && userPeriod.getStartDate() != null){
+			from.setTime(userPeriod.getStartDate());
+			to.setTime(userPeriod.getStartDate());
+			to.add(Calendar.DAY_OF_MONTH, 13);
+		} else {
+			from.add(Calendar.DAY_OF_MONTH, -14);
+			to.add(Calendar.DAY_OF_MONTH, -1);
+		}
 
 		Map<String, Object> replacementMap = new HashMap<String, Object>();
 		replacementMap.put("${yyyy}", yyyy.format(issueDate));
 		replacementMap.put("${mm}", mm.format(issueDate));
 		replacementMap.put("${dd}", dd.format(issueDate));
 		replacementMap.put("${dd.mm.yyyy}", dd_mm_yyyy.format(issueDate));
-		replacementMap.put("${fname}", userData.getFname() != null ? userData.getFname() : "");
-		replacementMap.put("${lname}", userData.getLname() != null ? userData.getLname() : "");
-		replacementMap.put("${address}", userData.getAddress() != null ? userData.getAddress() : "");
-		replacementMap.put("${bd.yyyy}", userData.getCnp() != null ? userData.getCnp().substring(1, 3) : "");
-		replacementMap.put("${bd.mm}", userData.getCnp() != null ? userData.getCnp().substring(3, 5) : "");
-		replacementMap.put("${bd.dd}", userData.getCnp() != null ? userData.getCnp().substring(5, 7) : "");
+		
+		String lname = userData != null && StringUtils.hasLength(userData.getLname())
+				? userData.getLname()
+				: userPeriod != null && StringUtils.hasLength(userPeriod.getLname())
+						? userPeriod.getLname() : "";
+						
+		String fname = userData != null && StringUtils.hasLength(userData.getFname())
+				? userData.getFname()
+				: userPeriod != null && StringUtils.hasLength(userPeriod.getFname())
+						? userPeriod.getFname() : "";
+						fname = fname.trim();
+						
+		String cnp = userData != null && StringUtils.hasLength(userData.getCnp()) 
+				? userData.getCnp()
+				: userPeriod != null && StringUtils.hasLength(userPeriod.getCnp()) 
+						? userPeriod.getCnp() : "";		
+						cnp = cnp.trim();
+		
+		String address = userData != null && userData.getAddress() != null ? userData.getAddress() : "X";					
+						
+		replacementMap.put("${fname}", fname);
+		replacementMap.put("${lname}", lname);
+		replacementMap.put("${address}", address);
+		replacementMap.put("${bd.yyyy}", extractFromCNP(cnp, 1, 3));
+		replacementMap.put("${bd.mm}", extractFromCNP(cnp, 3, 5));
+		replacementMap.put("${bd.dd}", extractFromCNP(cnp, 5, 7));
 		replacementMap.put("${period}", dd_mm_yyyy.format(from.getTime()) + " - " + dd_mm_yyyy.format(to.getTime()));
-		replacementMap.put("${1}", userData.getCnp() != null ? Character.toString(userData.getCnp().charAt(0)) : "");
-		replacementMap.put("${2}", userData.getCnp() != null ? Character.toString(userData.getCnp().charAt(1)) : "");
-		replacementMap.put("${3}", userData.getCnp() != null ? Character.toString(userData.getCnp().charAt(2)) : "");
-		replacementMap.put("${4}", userData.getCnp() != null ? Character.toString(userData.getCnp().charAt(3)) : "");
-		replacementMap.put("${5}", userData.getCnp() != null ? Character.toString(userData.getCnp().charAt(4)) : "");
-		replacementMap.put("${6}", userData.getCnp() != null ? Character.toString(userData.getCnp().charAt(5)) : "");
-		replacementMap.put("${7}", userData.getCnp() != null ? Character.toString(userData.getCnp().charAt(6)) : "");
-		replacementMap.put("${8}", userData.getCnp() != null ? Character.toString(userData.getCnp().charAt(7)) : "");
-		replacementMap.put("${9}", userData.getCnp() != null ? Character.toString(userData.getCnp().charAt(8)) : "");
-		replacementMap.put("${10}", userData.getCnp() != null ? Character.toString(userData.getCnp().charAt(9)) : "");
-		replacementMap.put("${11}", userData.getCnp() != null ? Character.toString(userData.getCnp().charAt(10)) : "");
-		replacementMap.put("${12}", userData.getCnp() != null ? Character.toString(userData.getCnp().charAt(11)) : "");
-		replacementMap.put("${13}", userData.getCnp() != null ? Character.toString(userData.getCnp().charAt(12)) : "");
+		
+		for(int i = 1; i <= 13; i++){
+			replacementMap.put("${" + i + "}", extractFromCNP(cnp, i-1, i));
+		}
 
 		return replacementMap;
 	}
-
-	private String setValues(String text, Map<String, String> replacementMap) {
-		for (Map.Entry<String, String> entry : replacementMap.entrySet()) {
-			if (text.contains(entry.getKey())) {
-				text.replaceAll(entry.getKey(), entry.getValue());
-			}
+	
+	private String extractFromCNP(String cnp, int beginIndex, int endIndex){
+		String extract = "X";
+		
+		if(!StringUtils.hasLength(cnp)){
+			return extract;
 		}
-
-		return text;
+		
+		if(beginIndex > cnp.length() -1 || endIndex > cnp.length()){
+			return extract;
+		}
+		
+		return cnp.substring(beginIndex, endIndex);
 	}
 
 	/**

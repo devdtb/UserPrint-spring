@@ -8,15 +8,15 @@ import javax.persistence.Id;
 @Entity
 public class UserData {
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
-	private long id;
+	private long userDataId;
 	private String ctr;
 	private String fname;
 	private String lname;
 	private String cnp;
 	private String address;
 	private String idnr;
-	public long getId() {
-		return id;
+	public long getUserDataId() {
+		return userDataId;
 	}
 	public String getCtr() {
 		return ctr;
@@ -36,8 +36,8 @@ public class UserData {
 	public String getIdnr() {
 		return idnr;
 	}
-	public void setId(long id) {
-		this.id = id;
+	public void setUserDataId(long userDataId) {
+		this.userDataId = userDataId;
 	}
 	public void setCtr(String ctr) {
 		this.ctr = ctr;
@@ -59,14 +59,14 @@ public class UserData {
 	}
 	@Override
 	public String toString() {
-		return "UserData [id=" + id + ", ctr=" + ctr + ", fname=" + fname + ", lname=" + lname + ", cnp=" + cnp
+		return "UserData [userDataId=" + userDataId + ", ctr=" + ctr + ", fname=" + fname + ", lname=" + lname + ", cnp=" + cnp
 				+ ", address=" + address + ", idnr=" + idnr + "]";
 	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + (int) (userDataId ^ (userDataId >>> 32));
 		return result;
 	}
 	@Override
@@ -78,7 +78,7 @@ public class UserData {
 		if (getClass() != obj.getClass())
 			return false;
 		UserData other = (UserData) obj;
-		if (id != other.id)
+		if (userDataId != other.userDataId)
 			return false;
 		return true;
 	}
