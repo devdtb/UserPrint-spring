@@ -106,12 +106,21 @@ public class DocxUserDataExporter {
 						? userPeriod.getCnp() : "";		
 						cnp = cnp.trim();
 		
+		//1 and 2 -> 1900; 5 + 6 -> 2000						
+		String century = "";
+		if(cnp.startsWith("1") || cnp.startsWith("2")){
+			century = "19";
+		} else {
+			century = "20";
+		}
+					
+						
 		String address = userData != null && userData.getAddress() != null ? userData.getAddress() : "X";					
 						
 		replacementMap.put("${fname}", fname);
 		replacementMap.put("${lname}", lname);
 		replacementMap.put("${address}", address);
-		replacementMap.put("${bd.yyyy}", extractFromCNP(cnp, 1, 3));
+		replacementMap.put("${bd.yyyy}", century + extractFromCNP(cnp, 1, 3));
 		replacementMap.put("${bd.mm}", extractFromCNP(cnp, 3, 5));
 		replacementMap.put("${bd.dd}", extractFromCNP(cnp, 5, 7));
 		replacementMap.put("${period}", dd_mm_yyyy.format(from.getTime()) + " - " + dd_mm_yyyy.format(to.getTime()));
